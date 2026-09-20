@@ -98,29 +98,21 @@
 			<div class="level-display" id="levelDisplay">🟠 NORMAL</div>
 		</div>
 		
-		<h3 style="color: #f5a623; margin: 20px 0 15px 0;">Vos circuits du jour:</h3>
+		<h3 style="color: #f5a623; margin: 20px 0 15px 0;">Choisir le jour:</h3>
+		
+		<div style="margin-bottom: 20px; display: flex; gap: 10px;">
+			<button onclick="selectDay(0)" style="background: #f5a623; color: #1a2a3a; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; border: 2px solid transparent;" id="btn0">📍 J1 (30 sept)</button>
+			<button onclick="selectDay(1)" style="background: transparent; color: #f5a623; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; border: 2px solid #f5a623;" id="btn1">📍 J2 (1 oct)</button>
+			<button onclick="selectDay(2)" style="background: transparent; color: #f5a623; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; border: 2px solid #f5a623;" id="btn2">📍 J3 (2 oct)</button>
+		</div>
+		
+		<h3 style="color: #f5a623; margin: 20px 0 15px 0;">Détail du circuit:</h3>
 		
 		<div class="route">
-			<div class="route-name">📍 J1 (30 sept) · Colorado & Gargas</div>
-			<div class="route-info" id="j1Info">
+			<div class="route-name" id="dayTitle">📍 J1 (30 sept) · Colorado & Gargas</div>
+			<div class="route-info" id="dayInfo">
 				<strong>🟠 NORMAL: 34 km</strong><br>
 				Roussillon → Colorado → Gargas/Ocres → retour
-			</div>
-		</div>
-		
-		<div class="route">
-			<div class="route-name">📍 J2 (1 oct) · Gordes & Sénanque</div>
-			<div class="route-info" id="j2Info">
-				<strong>🟠 NORMAL: 39 km</strong><br>
-				Gordes → Sénanque → retour
-			</div>
-		</div>
-		
-		<div class="route">
-			<div class="route-name">📍 J3 (2 oct) · Villages du Sud</div>
-			<div class="route-info" id="j3Info">
-				<strong>🟠 NORMAL: 45 km</strong><br>
-				Bonnieux → Lacoste → Ménerbe → retour
 			</div>
 		</div>
 	</div>
@@ -204,8 +196,14 @@
 			j3: null
 		};
 		
+		var dayNames = ['J1 (30 sept) · Colorado & Gargas', 'J2 (1 oct) · Gordes & Sénanque', 'J3 (2 oct) · Villages du Sud'];
+		var dayColors = ['#f5a623', '#4a8a9a', '#d98b4a'];
+		var currentDay = 0;
+		var currentLevel = 1;
+		
 		// FONCTION POUR METTRE À JOUR LES TRACÉS
 		function updateRoutes(level) {
+			currentLevel = level;
 			var levelData = data[level];
 			
 			// Supprimer les anciens tracés
@@ -214,32 +212,55 @@
 			if (polylines.j3) map.removeLayer(polylines.j3);
 			
 			// Ajouter les nouveaux tracés
-			polylines.j1 = L.polyline(levelData.j1.coords, {
-				color: '#f5a623',
-				weight: 3,
-				opacity: 0.7,
-				dashArray: '5, 5'
-			}).addTo(map).bindPopup('J1 - ' + levelData.j1.desc);
+			var days = ['j1', 'j2', 'j3'];
+			var colors = ['#f5a623', '#4a8a9a', '#d98b4a'];
 			
-			polylines.j2 = L.polyline(levelData.j2.coords, {
-				color: '#4a8a9a',
-				weight: 3,
-				opacity: 0.7,
-				dashArray: '5, 5'
-			}).addTo(map).bindPopup('J2 - ' + levelData.j2.desc);
+			days.forEach(function(day, idx) {
+				var dayData = levelData[day];
+				polylines[day] = L.polyline(dayData.coords, {
+					color: colors[idx],
+					weight: 3,
+					opacity: 0.7,
+					dashArray: '5, 5'
+				}).addTo(map).bindPopup(day.toUpperCase() + ' - ' + dayData.desc);
+			});
 			
-			polylines.j3 = L.polyline(levelData.j3.coords, {
-				color: '#d98b4a',
-				weight: 3,
-				opacity: 0.7,
-				dashArray: '5, 5'
-			}).addTo(map).bindPopup('J3 - ' + levelData.j3.desc);
+			// Mettre à jour le texte du jour courant
+			updateDayDisplay();
 			
-			// Mettre à jour le texte
+			// Mettre à jour le niveau
 			document.getElementById('levelDisplay').textContent = levelData.name;
-			document.getElementById('j1Info').innerHTML = '<strong>' + levelData.name + ': ' + levelData.j1.km + ' km</strong><br>' + levelData.j1.desc;
-			document.getElementById('j2Info').innerHTML = '<strong>' + levelData.name + ': ' + levelData.j2.km + ' km</strong><br>' + levelData.j2.desc;
-			document.getElementById('j3Info').innerHTML = '<strong>' + levelData.name + ': ' + levelData.j3.km + ' km</strong><br>' + levelData.j3.desc;
+		}
+		
+		// FONCTION POUR AFFICHER LE DÉTAIL D'UN JOUR
+		function updateDayDisplay() {
+			var levelData = data[currentLevel];
+			var days = ['j1', 'j2', 'j3'];
+			var day = days[currentDay];
+			var dayData = levelData[day];
+			
+			document.getElementById('dayTitle').textContent = '📍 ' + dayNames[currentDay];
+			document.getElementById('dayInfo').innerHTML = '<strong>' + levelData.name + ': ' + dayData.km + ' km</strong><br>' + dayData.desc;
+		}
+		
+		// FONCTION POUR CHANGER DE JOUR
+		function selectDay(dayNum) {
+			currentDay = dayNum;
+			
+			// Mettre à jour les boutons
+			document.getElementById('btn0').style.background = dayNum === 0 ? '#f5a623' : 'transparent';
+			document.getElementById('btn0').style.color = dayNum === 0 ? '#1a2a3a' : '#f5a623';
+			document.getElementById('btn0').style.borderColor = dayNum === 0 ? '#f5a623' : '#f5a623';
+			
+			document.getElementById('btn1').style.background = dayNum === 1 ? '#f5a623' : 'transparent';
+			document.getElementById('btn1').style.color = dayNum === 1 ? '#1a2a3a' : '#f5a623';
+			document.getElementById('btn1').style.borderColor = dayNum === 1 ? '#f5a623' : '#f5a623';
+			
+			document.getElementById('btn2').style.background = dayNum === 2 ? '#f5a623' : 'transparent';
+			document.getElementById('btn2').style.color = dayNum === 2 ? '#1a2a3a' : '#f5a623';
+			document.getElementById('btn2').style.borderColor = dayNum === 2 ? '#f5a623' : '#f5a623';
+			
+			updateDayDisplay();
 		}
 		
 		// ÉVÉNEMENT SLIDER
@@ -247,10 +268,10 @@
 			updateRoutes(parseInt(this.value));
 		});
 		
-		// INITIALISER AVEC NORMAL
+		// INITIALISER AVEC NORMAL ET J1
 		updateRoutes(1);
 		
-		console.log('✅ Carte chargée - slider fonctionnel!');
+		console.log('✅ Carte chargée - slider + boutons fonctionnels!');
 	</script>
 </body>
 </html>
