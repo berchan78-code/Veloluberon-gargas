@@ -3,53 +3,68 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Étoile du Luberon</title>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css">
+	<title>Étoile du Luberon - Gargas</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" />
 	<style>
 		* { margin: 0; padding: 0; box-sizing: border-box; }
-		html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a2a3a; color: #fff; }
+		html, body { height: 100%; font-family: Arial, sans-serif; background: #1a2a3a; color: #fff; }
 		
-		.header { background: linear-gradient(135deg, #1a3a4a 0%, #0d1f2d 100%); padding: 20px; text-align: center; border-bottom: 2px solid #4a8a9a; }
-		.eyebrow { font-size: 0.9em; color: #7ab8d0; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
-		h1 { font-size: 2.5em; margin-bottom: 5px; color: #fff; }
+		.header { 
+			background: linear-gradient(135deg, #1a3a4a 0%, #0d1f2d 100%); 
+			padding: 20px; 
+			text-align: center; 
+			border-bottom: 2px solid #4a8a9a;
+		}
+		.eyebrow { font-size: 0.9em; color: #7ab8d0; letter-spacing: 2px; margin-bottom: 10px; }
+		h1 { font-size: 2.5em; margin-bottom: 5px; }
 		.subtitle { font-size: 1.8em; color: #f5a623; margin-bottom: 20px; }
-		.info { font-size: 0.95em; color: #9bb5c5; margin-bottom: 10px; line-height: 1.6; max-width: 900px; margin-left: auto; margin-right: auto; }
+		.info { font-size: 0.95em; color: #9bb5c5; line-height: 1.6; }
 		
-		.tags { text-align: center; margin-top: 15px; }
-		.tag { display: inline-block; background: rgba(122, 184, 208, 0.2); border: 1px solid #4a8a9a; color: #7ab8d0; padding: 5px 12px; margin: 3px; border-radius: 20px; font-size: 0.85em; }
+		#map { 
+			width: 100vw; 
+			height: 500px;
+			background: #0d1f2d;
+		}
 		
-		#map { height: calc(100vh - 250px); }
+		.controls { 
+			max-width: 900px; 
+			margin: 20px auto; 
+			background: rgba(30, 50, 70, 0.95); 
+			padding: 30px; 
+			border-radius: 8px; 
+			border: 1px solid #4a8a9a;
+		}
 		
-		.controls { max-width: 900px; margin: 20px auto; background: rgba(30, 50, 70, 0.8); padding: 20px; border-radius: 8px; border: 1px solid #4a8a9a; }
+		h2 { color: #f5a623; margin-bottom: 15px; }
 		
-		h2 { color: #f5a623; margin-bottom: 15px; font-size: 1.3em; }
-		
-		.section { margin-bottom: 20px; }
-		.label { color: #9bb5c5; font-size: 0.95em; margin-bottom: 8px; }
-		
-		.slider-container { margin: 15px 0; }
-		input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: #3a5a6a; outline: none; }
-		input[type="range"]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #f5a623; cursor: pointer; }
-		input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #f5a623; cursor: pointer; border: none; }
-		
-		.distance-display { color: #f5a623; font-weight: bold; font-size: 1.2em; }
-		.level-display { color: #7ab8d0; font-size: 0.95em; margin-top: 8px; }
-		
-		.routes { margin-top: 20px; }
-		.route { background: rgba(50, 70, 90, 0.6); border-left: 4px solid #f5a623; padding: 12px; margin-bottom: 10px; border-radius: 4px; }
+		.route { 
+			background: rgba(50, 70, 90, 0.6); 
+			border-left: 4px solid #f5a623; 
+			padding: 12px; 
+			margin-bottom: 10px; 
+			border-radius: 4px; 
+		}
 		.route-name { color: #f5a623; font-weight: bold; margin-bottom: 5px; }
 		.route-info { color: #9bb5c5; font-size: 0.9em; }
 		
-		button { background: #f5a623; color: #1a2a3a; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin: 5px 5px 5px 0; }
+		button { 
+			background: #f5a623; 
+			color: #1a2a3a; 
+			border: none; 
+			padding: 10px 20px; 
+			border-radius: 4px; 
+			cursor: pointer; 
+			font-weight: bold; 
+			margin: 10px 5px 10px 0;
+		}
 		button:hover { opacity: 0.8; }
 		
-		.footer { text-align: center; color: #5a7a8a; padding: 20px; font-size: 0.9em; border-top: 1px solid #3a5a6a; }
-		
-		@media (max-width: 768px) {
-			h1 { font-size: 1.8em; }
-			.subtitle { font-size: 1.3em; }
-			#map { height: calc(100vh - 350px); }
+		.footer { 
+			text-align: center; 
+			color: #5a7a8a; 
+			padding: 20px; 
+			font-size: 0.9em; 
+			border-top: 1px solid #3a5a6a;
 		}
 	</style>
 </head>
@@ -58,108 +73,171 @@
 		<div class="eyebrow">Gargas · Luberon · Vaucluse</div>
 		<h1>Étoile du Luberon</h1>
 		<p class="subtitle">3 jours · vélo électrique</p>
-		<p class="info">Mardi 30 septembre – jeudi 2 octobre 2026 · 8 cyclistes (60+) · base Airbnb, retour chaque soir · pique-niques le midi · trois formules chaque jour — court, normal ou long — d'environ 20 à 60 km.</p>
-		<p class="info">100 % goudron & voie verte</p>
-		<div class="tags">
-			<span class="tag">VTC électriques</span>
-			<span class="tag">100 % goudron & voie verte</span>
-			<span class="tag">Court · Normal · Long chaque jour</span>
-			<span class="tag">Effort 3 h – 6 h</span>
-		</div>
+		<p class="info">Mardi 30 septembre – jeudi 2 octobre 2026</p>
+		<p class="info">Base Airbnb: 213 chemin de St Estève, Gargas</p>
 	</div>
 
 	<div id="map"></div>
 
 	<div class="controls">
-		<h2>Vue d'ensemble · 30 sept – 2 oct</h2>
-		<p class="info">Le séjour en un coup d'œil</p>
-		<p style="margin-top: 15px; color: #9bb5c5; line-height: 1.8;">Trois boucles en étoile depuis Gargas (213 chemin de St Estève). Retour à la base chaque soir.</p>
+		<h2>Circuits - 30 sept au 2 oct</h2>
 		
-		<div class="slider-container" style="margin-top: 25px;">
-			<label class="label">Gabarit des journées — réglage global (les 3 jours)</label>
-			<input type="range" id="difficultySlider" min="0" max="2" value="1">
-			<div style="margin-top: 10px; text-align: center;">
-				<span class="distance-display" id="difficultyLabel">Normal</span>
-				<div class="level-display" id="kmLabel">↓ environ 39 km par jour en moyenne</div>
-			</div>
+		<div class="route">
+			<div class="route-name">J1 (30 sept) · Colorado & Gargas</div>
+			<div class="route-info">🟡 Court: 23 km | 🟠 Normal: 34 km | 🔴 Long: 51 km</div>
 		</div>
-
-		<div class="routes">
-			<div class="route">
-				<div class="route-name">J1 · Colorado & Gargas</div>
-				<div class="route-info">🟡 Court (23 km) — 🟠 Normal (34 km) — 🔴 Long (51 km)</div>
-				<div class="route-info" style="margin-top: 8px; font-size: 0.85em; color: #7ab8d0;">Pays des Ocres · Roussillon · Colorado (Rustrel) · Gargas · boucles officielles</div>
-			</div>
-			
-			<div class="route">
-				<div class="route-name">J2 · Gordes & Sénanque</div>
-				<div class="route-info">🟡 Court (28 km vers Gordes) — 🟠 Normal (39 km Gordes & Sénanque) — 🔴 Long (48 km)</div>
-				<div class="route-info" style="margin-top: 8px; font-size: 0.85em; color: #7ab8d0;">Monts de Vaucluse · Joucas · Sénanque · Murs · Lioux</div>
-			</div>
-			
-			<div class="route">
-				<div class="route-name">J3 · Villages perchés du Sud</div>
-				<div class="route-info">🟡 Court (19 km) — 🟠 Normal (45 km) — 🔴 Long (60 km)</div>
-				<div class="route-info" style="margin-top: 8px; font-size: 0.85em; color: #7ab8d0;">Calavon · sud Luberon · Bonnieux · Lacoste · Ménerbe · Oppède</div>
-			</div>
+		
+		<div class="route">
+			<div class="route-name">J2 (1 oct) · Gordes & Sénanque</div>
+			<div class="route-info">🟡 Court: 28 km (Gordes) | 🟠 Normal: 39 km (Gordes + Sénanque) | 🔴 Long: 48 km</div>
 		</div>
-
-		<button onclick="downloadAllGPX()">📥 Télécharger tous les GPX</button>
-		<button onclick="toggleShareLink()">🔗 Partager le réglage aux autres</button>
+		
+		<div class="route">
+			<div class="route-name">J3 (2 oct) · Sud Luberon - Villages perchés</div>
+			<div class="route-info">🟡 Court: 19 km | 🟠 Normal: 45 km | 🔴 Long: 60 km</div>
+		</div>
+		
+		<button onclick="alert('GPX en préparation')">📥 Télécharger GPX</button>
+		<button onclick="alert('URL: ' + window.location.href)">🔗 Partager</button>
 	</div>
 
 	<div class="footer">
 		<p>✨ v3.19.0 · Étoile du Luberon · Veloluberon</p>
-		<p style="margin-top: 10px; font-size: 0.8em; color: #3a5a6a;">Tous les circuits recalculent leur routage depuis Gargas (43.8748, 5.3181) | POI : Colorado, Roussillon, Gordes, Sénanque, Bonnieux, Lacoste, Ménerbe, Oppède</p>
+		<p style="margin-top: 10px; font-size: 0.8em;">Base: Gargas (43.8748, 5.3181) | POI: Colorado, Roussillon, Gordes, Sénanque, Bonnieux, Lacoste, Ménerbe, Oppède</p>
 	</div>
 
-	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
+	
 	<script>
-		var BASE = [43.87486528400317, 5.3181659969108335];
-		var BASE_POPUP = '<b>Base Airbnb</b><br>213 chemin de St Estève<br>Gargas · alt. ≈ 420 m';
-		
+		// Créer la carte
 		var map = L.map('map').setView([43.87, 5.28], 11);
 		
-		L.tileLayer('https://{s}.basemaps.cartocdn.com/voyager/{z}/{x}/{y}{r}.png', {
-			attribution: '© OpenStreetMap contributors & CartoDB',
-			maxZoom: 19
+		// TUILES ESRI (fonctionne partout, gratuit)
+		L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+			attribution: '© Esri',
+			maxZoom: 18
 		}).addTo(map);
 		
-		L.circleMarker(BASE, {
+		// Point de départ - Gargas
+		var base = [43.87486528400317, 5.3181659969108335];
+		L.circleMarker(base, {
 			radius: 12,
 			fillColor: '#f5a623',
 			color: '#fff',
 			weight: 3,
 			opacity: 1,
 			fillOpacity: 0.8
-		}).addTo(map).bindPopup(BASE_POPUP);
+		}).addTo(map).bindPopup('<b>Base Airbnb</b><br>Gargas<br>213 chemin de St Estève');
 		
-		var currentDifficulty = 1;
-		var levels = ['Court', 'Normal', 'Long'];
+		// Points d'intérêt
+		var pois = [
+			{coord: [43.87, 5.20], name: 'Colorado', color: '#d98b4a'},
+			{coord: [43.88, 5.26], name: 'Roussillon', color: '#c66b2c'},
+			{coord: [43.911944, 5.200833], name: 'Gordes', color: '#5a8a9a'},
+			{coord: [43.91, 5.19], name: 'Abbaye Sénanque', color: '#4a8a9a'},
+			{coord: [43.8239, 5.3075], name: 'Bonnieux', color: '#d98b4a'},
+			{coord: [43.82, 5.31], name: 'Lacoste', color: '#d98b4a'},
+			{coord: [43.81, 5.32], name: 'Ménerbe', color: '#d98b4a'},
+			{coord: [43.80, 5.32], name: 'Oppède', color: '#d98b4a'}
+		];
 		
-		document.getElementById('difficultySlider').addEventListener('change', function() {
-			currentDifficulty = parseInt(this.value);
-			updateDisplay();
+		pois.forEach(function(poi) {
+			L.circleMarker(poi.coord, {
+				radius: 7,
+				fillColor: poi.color,
+				color: '#fff',
+				weight: 2,
+				opacity: 0.8,
+				fillOpacity: 0.6
+			}).addTo(map).bindPopup('<b>' + poi.name + '</b>');
 		});
 		
-		function updateDisplay() {
-			document.getElementById('difficultyLabel').textContent = levels[currentDifficulty];
-			var kms = [23, 34, 51];
-			document.getElementById('kmLabel').textContent = '↓ environ ' + kms[currentDifficulty] + ' km par jour en moyenne';
-		}
+		// ==================== TRACÉS DES CIRCUITS ====================
 		
-		function downloadAllGPX() {
-			alert('Téléchargement des GPX depuis Gargas\nJ1 Court/Normal/Long\nJ2 Court/Normal/Long\nJ3 Court/Normal/Long');
-		}
+		// J1 - Colorado & Gargas
+		var j1_route = [
+			base,
+			[43.88, 5.26],  // Roussillon
+			[43.87, 5.20],  // Colorado
+			[43.88, 5.29],  // Gargas/Ocres
+			base
+		];
+		L.polyline(j1_route, {
+			color: '#f5a623',
+			weight: 3,
+			opacity: 0.7,
+			dashArray: '5, 5'
+		}).addTo(map).bindPopup('J1 · Colorado & Gargas');
 		
-		function toggleShareLink() {
-			var url = window.location.href + '?difficulty=' + currentDifficulty;
-			alert('URL à partager:\n\n' + url);
-		}
+		// J2 Court - Gordes seul
+		var j2_court = [
+			base,
+			[43.911944, 5.200833],  // Gordes
+			base
+		];
 		
-		updateDisplay();
+		// J2 Normal - Gordes & Sénanque
+		var j2_normal = [
+			base,
+			[43.911944, 5.200833],  // Gordes
+			[43.91, 5.19],  // Sénanque
+			base
+		];
+		
+		// J2 Long - Gordes, Sénanque & extensions
+		var j2_long = [
+			base,
+			[43.911944, 5.200833],  // Gordes
+			[43.91, 5.19],  // Sénanque
+			[43.90, 5.15],  // Joucas
+			[43.88, 5.12],  // Murs
+			[43.85, 5.08],  // Lioux
+			base
+		];
+		
+		// Afficher J2 Normal par défaut
+		L.polyline(j2_normal, {
+			color: '#4a8a9a',
+			weight: 3,
+			opacity: 0.7,
+			dashArray: '5, 5'
+		}).addTo(map).bindPopup('J2 · Gordes & Sénanque');
+		
+		// J3 Court - Bonnieux
+		var j3_court = [
+			base,
+			[43.8239, 5.3075],  // Bonnieux
+			base
+		];
+		
+		// J3 Normal - Bonnieux, Lacoste, Ménerbe
+		var j3_normal = [
+			base,
+			[43.8239, 5.3075],  // Bonnieux
+			[43.82, 5.31],  // Lacoste
+			[43.81, 5.32],  // Ménerbe
+			base
+		];
+		
+		// J3 Long - Bonnieux, Lacoste, Ménerbe, Oppède
+		var j3_long = [
+			base,
+			[43.8239, 5.3075],  // Bonnieux
+			[43.82, 5.31],  // Lacoste
+			[43.81, 5.32],  // Ménerbe
+			[43.80, 5.32],  // Oppède
+			base
+		];
+		
+		// Afficher J3 Normal par défaut
+		L.polyline(j3_normal, {
+			color: '#d98b4a',
+			weight: 3,
+			opacity: 0.7,
+			dashArray: '5, 5'
+		}).addTo(map).bindPopup('J3 · Villages du Sud');
+		
+		console.log('✅ Carte prête avec tous les tracés!');
 	</script>
 </body>
 </html>
