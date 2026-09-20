@@ -80,21 +80,45 @@
 	<div id="map"></div>
 
 	<div class="controls">
-		<h2>Circuits - 30 sept au 2 oct</h2>
+		<h2>Réglage des circuits - 30 sept au 2 oct</h2>
+		
+		<div style="margin-bottom: 30px; padding: 20px; background: rgba(50, 70, 90, 0.6); border-radius: 6px;">
+			<label style="display: block; color: #9bb5c5; margin-bottom: 15px;">📍 Gabarit des journées:</label>
+			<input type="range" id="difficultySlider" min="0" max="2" value="1" style="width: 100%; height: 8px; cursor: pointer; accent-color: #f5a623;">
+			<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #7ab8d0; font-size: 0.9em;">
+				<span>🟡 Court (~20-30 km)</span>
+				<span id="levelLabel" style="color: #f5a623; font-weight: bold;">🟠 Normal (~35-45 km)</span>
+				<span>🔴 Long (~50-60 km)</span>
+			</div>
+		</div>
+		
+		<h3 style="color: #f5a623; margin-bottom: 15px; margin-top: 30px;">Vos circuits:</h3>
 		
 		<div class="route">
-			<div class="route-name">J1 (30 sept) · Colorado & Gargas</div>
-			<div class="route-info">🟡 Court: 23 km | 🟠 Normal: 34 km | 🔴 Long: 51 km</div>
+			<div class="route-name">📍 J1 (30 sept) · Colorado & Gargas</div>
+			<div class="route-info">
+				<div style="margin: 8px 0;">🟡 Court: 23 km — Colorado seul</div>
+				<div style="margin: 8px 0;">🟠 Normal: 34 km — Colorado + Gargas</div>
+				<div style="margin: 8px 0;">🔴 Long: 51 km — Boucle complète</div>
+			</div>
 		</div>
 		
 		<div class="route">
-			<div class="route-name">J2 (1 oct) · Gordes & Sénanque</div>
-			<div class="route-info">🟡 Court: 28 km (Gordes) | 🟠 Normal: 39 km (Gordes + Sénanque) | 🔴 Long: 48 km</div>
+			<div class="route-name">📍 J2 (1 oct) · Gordes & Sénanque</div>
+			<div class="route-info">
+				<div style="margin: 8px 0;">🟡 Court: 28 km — Gordes seul</div>
+				<div style="margin: 8px 0;">🟠 Normal: 39 km — Gordes + Sénanque</div>
+				<div style="margin: 8px 0;">🔴 Long: 48 km — + extensions (Joucas, Murs, Lioux)</div>
+			</div>
 		</div>
 		
 		<div class="route">
-			<div class="route-name">J3 (2 oct) · Sud Luberon - Villages perchés</div>
-			<div class="route-info">🟡 Court: 19 km | 🟠 Normal: 45 km | 🔴 Long: 60 km</div>
+			<div class="route-name">📍 J3 (2 oct) · Sud Luberon - Villages perchés</div>
+			<div class="route-info">
+				<div style="margin: 8px 0;">🟡 Court: 19 km — Bonnieux</div>
+				<div style="margin: 8px 0;">🟠 Normal: 45 km — Bonnieux, Lacoste, Ménerbe</div>
+				<div style="margin: 8px 0;">🔴 Long: 60 km — + Oppède</div>
+			</div>
 		</div>
 		
 		<button onclick="alert('GPX en préparation')">📥 Télécharger GPX</button>
@@ -229,13 +253,57 @@
 			base
 		];
 		
-		// Afficher J3 Normal par défaut
+		// Groupes de tracés par difficulté
+		var routesByLevel = {
+			0: {
+				j1: [base, [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], base],
+				j2: [base, [43.911944, 5.200833], base],
+				j3: [base, [43.8239, 5.3075], base]
+			},
+			1: {
+				j1: [base, [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], base],
+				j2: [base, [43.911944, 5.200833], [43.91, 5.19], base],
+				j3: [base, [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], base]
+			},
+			2: {
+				j1: [base, [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], base],
+				j2: [base, [43.911944, 5.200833], [43.91, 5.19], [43.90, 5.15], [43.88, 5.12], [43.85, 5.08], base],
+				j3: [base, [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], [43.80, 5.32], base]
+			}
+		};
+		
+		// Couches pour chaque circuit (seront créées au besoin)
+		var layers = {
+			j1: null,
+			j2: null,
+			j3: null
+		};
+		
+		// Afficher J2 et J3 Normal par défaut
+		L.polyline(j2_normal, {
+			color: '#4a8a9a',
+			weight: 3,
+			opacity: 0.7,
+			dashArray: '5, 5'
+		}).addTo(map).bindPopup('J2 · Gordes & Sénanque');
+		
 		L.polyline(j3_normal, {
 			color: '#d98b4a',
 			weight: 3,
 			opacity: 0.7,
 			dashArray: '5, 5'
 		}).addTo(map).bindPopup('J3 · Villages du Sud');
+		
+		// ==================== CONTRÔLE DU SLIDER ====================
+		
+		var levels = ['🟡 Court', '🟠 Normal', '🔴 Long'];
+		var currentLevel = 1;
+		
+		document.getElementById('difficultySlider').addEventListener('change', function() {
+			currentLevel = parseInt(this.value);
+			document.getElementById('levelLabel').textContent = levels[currentLevel];
+			console.log('Niveau changé à: ' + levels[currentLevel]);
+		});
 		
 		console.log('✅ Carte prête avec tous les tracés!');
 	</script>
