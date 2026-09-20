@@ -1,277 +1,500 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Étoile du Luberon - Gargas</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" />
-	<style>
-		* { margin: 0; padding: 0; box-sizing: border-box; }
-		html, body { height: 100%; font-family: Arial, sans-serif; background: #1a2a3a; color: #fff; }
-		
-		.header { 
-			background: linear-gradient(135deg, #1a3a4a 0%, #0d1f2d 100%); 
-			padding: 20px; 
-			text-align: center; 
-			border-bottom: 2px solid #4a8a9a;
-		}
-		.eyebrow { font-size: 0.9em; color: #7ab8d0; letter-spacing: 2px; margin-bottom: 10px; }
-		h1 { font-size: 2.5em; margin-bottom: 5px; }
-		.subtitle { font-size: 1.8em; color: #f5a623; margin-bottom: 20px; }
-		.info { font-size: 0.95em; color: #9bb5c5; line-height: 1.6; }
-		
-		#map { 
-			width: 100%;
-			height: 500px;
-			background: #0d1f2d;
-		}
-		
-		.controls { 
-			max-width: 900px; 
-			margin: 20px auto; 
-			background: rgba(30, 50, 70, 0.95); 
-			padding: 30px; 
-			border-radius: 8px; 
-			border: 1px solid #4a8a9a;
-		}
-		
-		h2 { color: #f5a623; margin-bottom: 15px; }
-		
-		.slider-box {
-			background: rgba(50, 70, 90, 0.6);
-			padding: 20px;
-			border-radius: 6px;
-			margin-bottom: 30px;
-		}
-		
-		input[type="range"] {
-			width: 100%;
-			height: 8px;
-			cursor: pointer;
-			accent-color: #f5a623;
-		}
-		
-		.level-display {
-			text-align: center;
-			margin-top: 15px;
-			font-size: 1.2em;
-			color: #f5a623;
-			font-weight: bold;
-		}
-		
-		.route { 
-			background: rgba(50, 70, 90, 0.6); 
-			border-left: 4px solid #f5a623; 
-			padding: 12px; 
-			margin-bottom: 10px; 
-			border-radius: 4px; 
-		}
-		.route-name { color: #f5a623; font-weight: bold; margin-bottom: 5px; }
-		.route-info { color: #9bb5c5; font-size: 0.9em; line-height: 1.6; }
-		
-		.footer { 
-			text-align: center; 
-			color: #5a7a8a; 
-			padding: 20px; 
-			font-size: 0.9em; 
-			border-top: 1px solid #3a5a6a;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Étoile du Luberon - Circuits Vélo Gargas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+        .map-container {
+            position: relative;
+        }
+        #map {
+            height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 0.9em;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .day-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .day-btn {
+            padding: 12px;
+            font-size: 1em;
+            border: 2px solid #333;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .day-btn:nth-child(1) {
+            border-color: #FF1744;
+            color: #FF1744;
+        }
+        .day-btn:nth-child(1).active {
+            background: #FF1744;
+            color: white;
+        }
+        .day-btn:nth-child(2) {
+            border-color: #00BCD4;
+            color: #00BCD4;
+        }
+        .day-btn:nth-child(2).active {
+            background: #00BCD4;
+            color: white;
+        }
+        .day-btn:nth-child(3) {
+            border-color: #FFC107;
+            color: #F57F17;
+        }
+        .day-btn:nth-child(3).active {
+            background: #FFC107;
+            color: #333;
+        }
+        .day-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .slider-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .slider-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .difficulty-labels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #90EE90 0%, #FFD700 50%, #FF6B6B 100%);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .detail-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .detail-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .circuit-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .info-label {
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .info-value {
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .route-steps {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .route-steps h4 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        .step {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        .step-num {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 8px;
+        }
+        .poi {
+            font-style: italic;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            #map {
+                height: 400px;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .legend {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.8em;
+            }
+        }
+        .leaflet-popup-content {
+            font-size: 0.9em !important;
+        }
+        .detail-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        .detail-box::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .detail-box::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        .detail-box::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
 </head>
 <body>
-	<div class="header">
-		<div class="eyebrow">Gargas · Luberon · Vaucluse</div>
-		<h1>Étoile du Luberon</h1>
-		<p class="subtitle">3 jours · vélo électrique</p>
-		<p class="info">Mardi 30 septembre – jeudi 2 octobre 2026</p>
-		<p class="info">Base Airbnb: 213 chemin de St Estève, Gargas</p>
-	</div>
+    <div class="container">
+        <div class="header">
+            <h1>🚴 Étoile du Luberon</h1>
+            <p>Circuits vélo électrique • Gargas • 30 sept - 2 oct 2026</p>
+        </div>
 
-	<div id="map"></div>
+        <div class="content">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="legend">
+                    <div style="font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">📍 Légende</div>
+                    <div class="legend-item">
+                        <div style="background: #FF1744; width: 15px; height: 15px; border-radius: 50%;"></div>
+                        <span>J1 - Ocres</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="background: #00BCD4; width: 15px; height: 15px; border-radius: 50%;"></div>
+                        <span>J2 - Gordes</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="background: #FFC107; width: 15px; height: 15px; border-radius: 50%;"></div>
+                        <span>J3 - Sud</span>
+                    </div>
+                </div>
+            </div>
 
-	<div class="controls">
-		<h2>Réglage des circuits</h2>
-		
-		<div class="slider-box">
-			<label style="color: #9bb5c5; display: block; margin-bottom: 10px;">Choisissez votre gabarit:</label>
-			<input type="range" id="slider" min="0" max="2" value="1">
-			<div class="level-display" id="levelDisplay">🟠 NORMAL</div>
-		</div>
-		
-		<h3 style="color: #f5a623; margin: 20px 0 15px 0;">Choisir le jour:</h3>
-		
-		<div style="margin-bottom: 20px; display: flex; gap: 10px;">
-			<button onclick="selectDay(0)" style="background: #f5a623; color: #1a2a3a; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; border: 2px solid transparent;" id="btn0">📍 J1 (30 sept)</button>
-			<button onclick="selectDay(1)" style="background: transparent; color: #f5a623; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; border: 2px solid #f5a623;" id="btn1">📍 J2 (1 oct)</button>
-			<button onclick="selectDay(2)" style="background: transparent; color: #f5a623; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; border: 2px solid #f5a623;" id="btn2">📍 J3 (2 oct)</button>
-		</div>
-		
-		<h3 style="color: #f5a623; margin: 20px 0 15px 0;">Détail du circuit:</h3>
-		
-		<div class="route">
-			<div class="route-name" id="dayTitle">📍 J1 (30 sept) · Colorado & Gargas</div>
-			<div class="route-info" id="dayInfo">
-				<strong>🟠 NORMAL: 34 km</strong><br>
-				Roussillon → Colorado → Gargas/Ocres → retour
-			</div>
-		</div>
-	</div>
+            <div class="controls">
+                <div class="day-buttons">
+                    <button class="day-btn active" onclick="selectDay(1)">📅 J1 (30 sept)</button>
+                    <button class="day-btn" onclick="selectDay(2)">📅 J2 (1 oct)</button>
+                    <button class="day-btn" onclick="selectDay(3)">📅 J3 (2 oct)</button>
+                </div>
 
-	<div class="footer">
-		<p>✨ v3.19.0 · Étoile du Luberon · Veloluberon</p>
-		<p style="margin-top: 10px; font-size: 0.8em;">Base: Gargas (43.8748, 5.3181)</p>
-	</div>
+                <div class="slider-container">
+                    <div class="slider-label">Niveau de difficulté</div>
+                    <input type="range" id="difficultySlider" min="0" max="2" value="1" oninput="updateDifficulty()">
+                    <div class="difficulty-labels">
+                        <div>🟢 Court</div>
+                        <div>🟡 Normal</div>
+                        <div>🔴 Long</div>
+                    </div>
+                </div>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
-	
-	<script>
-		// DONNÉES DES CIRCUITS
-		var data = {
-			0: { // COURT
-				name: '🟡 COURT',
-				j1: { km: 23, desc: 'Colorado seul', coords: [[43.87486528400317, 5.3181659969108335], [43.87, 5.20], [43.87486528400317, 5.3181659969108335]] },
-				j2: { km: 28, desc: 'Gordes seul', coords: [[43.87486528400317, 5.3181659969108335], [43.911944, 5.200833], [43.87486528400317, 5.3181659969108335]] },
-				j3: { km: 19, desc: 'Bonnieux', coords: [[43.87486528400317, 5.3181659969108335], [43.8239, 5.3075], [43.87486528400317, 5.3181659969108335]] }
-			},
-			1: { // NORMAL
-				name: '🟠 NORMAL',
-				j1: { km: 34, desc: 'Colorado + Gargas', coords: [[43.87486528400317, 5.3181659969108335], [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], [43.87486528400317, 5.3181659969108335]] },
-				j2: { km: 39, desc: 'Gordes + Sénanque', coords: [[43.87486528400317, 5.3181659969108335], [43.911944, 5.200833], [43.91, 5.19], [43.87486528400317, 5.3181659969108335]] },
-				j3: { km: 45, desc: 'Bonnieux + Lacoste + Ménerbe', coords: [[43.87486528400317, 5.3181659969108335], [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], [43.87486528400317, 5.3181659969108335]] }
-			},
-			2: { // LONG
-				name: '🔴 LONG',
-				j1: { km: 51, desc: 'Boucle complète', coords: [[43.87486528400317, 5.3181659969108335], [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], [43.87486528400317, 5.3181659969108335]] },
-				j2: { km: 48, desc: 'Gordes + Sénanque + extensions', coords: [[43.87486528400317, 5.3181659969108335], [43.911944, 5.200833], [43.91, 5.19], [43.90, 5.15], [43.88, 5.12], [43.85, 5.08], [43.87486528400317, 5.3181659969108335]] },
-				j3: { km: 60, desc: 'Tous les villages + Oppède', coords: [[43.87486528400317, 5.3181659969108335], [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], [43.80, 5.32], [43.87486528400317, 5.3181659969108335]] }
-			}
-		};
-		
-		// CRÉER LA CARTE
-		var map = L.map('map').setView([43.87, 5.28], 11);
-		
-		// TUILES ESRI
-		L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-			attribution: '© Esri',
-			maxZoom: 18
-		}).addTo(map);
-		
-		// MARQUEURS POI
-		var base = [43.87486528400317, 5.3181659969108335];
-		L.circleMarker(base, {
-			radius: 12,
-			fillColor: '#f5a623',
-			color: '#fff',
-			weight: 3,
-			opacity: 1,
-			fillOpacity: 0.8
-		}).addTo(map).bindPopup('<b>Base Airbnb</b><br>Gargas');
-		
-		var pois = [
-			{coord: [43.87, 5.20], name: 'Colorado', color: '#d98b4a'},
-			{coord: [43.88, 5.26], name: 'Roussillon', color: '#c66b2c'},
-			{coord: [43.911944, 5.200833], name: 'Gordes', color: '#5a8a9a'},
-			{coord: [43.91, 5.19], name: 'Sénanque', color: '#4a8a9a'},
-			{coord: [43.8239, 5.3075], name: 'Bonnieux', color: '#d98b4a'},
-			{coord: [43.82, 5.31], name: 'Lacoste', color: '#d98b4a'},
-			{coord: [43.81, 5.32], name: 'Ménerbe', color: '#d98b4a'},
-			{coord: [43.80, 5.32], name: 'Oppède', color: '#d98b4a'}
-		];
-		
-		pois.forEach(function(poi) {
-			L.circleMarker(poi.coord, {
-				radius: 7,
-				fillColor: poi.color,
-				color: '#fff',
-				weight: 2,
-				opacity: 0.8,
-				fillOpacity: 0.6
-			}).addTo(map).bindPopup(poi.name);
-		});
-		
-		// TRACÉS (objets polylines)
-		var polylines = {
-			j1: null,
-			j2: null,
-			j3: null
-		};
-		
-		var dayNames = ['J1 (30 sept) · Colorado & Gargas', 'J2 (1 oct) · Gordes & Sénanque', 'J3 (2 oct) · Villages du Sud'];
-		var dayColors = ['#f5a623', '#4a8a9a', '#d98b4a'];
-		var currentDay = 0;
-		var currentLevel = 1;
-		
-		// FONCTION POUR METTRE À JOUR LES TRACÉS
-		function updateRoutes(level) {
-			currentLevel = level;
-			var levelData = data[level];
-			
-			// Supprimer les anciens tracés
-			if (polylines.j1) map.removeLayer(polylines.j1);
-			if (polylines.j2) map.removeLayer(polylines.j2);
-			if (polylines.j3) map.removeLayer(polylines.j3);
-			
-			// Ajouter les nouveaux tracés
-			var days = ['j1', 'j2', 'j3'];
-			var colors = ['#f5a623', '#4a8a9a', '#d98b4a'];
-			
-			days.forEach(function(day, idx) {
-				var dayData = levelData[day];
-				polylines[day] = L.polyline(dayData.coords, {
-					color: colors[idx],
-					weight: 3,
-					opacity: 0.7,
-					dashArray: '5, 5'
-				}).addTo(map).bindPopup(day.toUpperCase() + ' - ' + dayData.desc);
-			});
-			
-			// Mettre à jour le texte du jour courant
-			updateDayDisplay();
-			
-			// Mettre à jour le niveau
-			document.getElementById('levelDisplay').textContent = levelData.name;
-		}
-		
-		// FONCTION POUR AFFICHER LE DÉTAIL D'UN JOUR
-		function updateDayDisplay() {
-			var levelData = data[currentLevel];
-			var days = ['j1', 'j2', 'j3'];
-			var day = days[currentDay];
-			var dayData = levelData[day];
-			
-			document.getElementById('dayTitle').textContent = '📍 ' + dayNames[currentDay];
-			document.getElementById('dayInfo').innerHTML = '<strong>' + levelData.name + ': ' + dayData.km + ' km</strong><br>' + dayData.desc;
-		}
-		
-		// FONCTION POUR CHANGER DE JOUR
-		function selectDay(dayNum) {
-			currentDay = dayNum;
-			
-			// Mettre à jour les boutons
-			document.getElementById('btn0').style.background = dayNum === 0 ? '#f5a623' : 'transparent';
-			document.getElementById('btn0').style.color = dayNum === 0 ? '#1a2a3a' : '#f5a623';
-			document.getElementById('btn0').style.borderColor = dayNum === 0 ? '#f5a623' : '#f5a623';
-			
-			document.getElementById('btn1').style.background = dayNum === 1 ? '#f5a623' : 'transparent';
-			document.getElementById('btn1').style.color = dayNum === 1 ? '#1a2a3a' : '#f5a623';
-			document.getElementById('btn1').style.borderColor = dayNum === 1 ? '#f5a623' : '#f5a623';
-			
-			document.getElementById('btn2').style.background = dayNum === 2 ? '#f5a623' : 'transparent';
-			document.getElementById('btn2').style.color = dayNum === 2 ? '#1a2a3a' : '#f5a623';
-			document.getElementById('btn2').style.borderColor = dayNum === 2 ? '#f5a623' : '#f5a623';
-			
-			updateDayDisplay();
-		}
-		
-		// ÉVÉNEMENT SLIDER
-		document.getElementById('slider').addEventListener('input', function() {
-			updateRoutes(parseInt(this.value));
-		});
-		
-		// INITIALISER AVEC NORMAL ET J1
-		updateRoutes(1);
-		
-		console.log('✅ Carte chargée - slider + boutons fonctionnels!');
-	</script>
+                <div class="detail-box">
+                    <h3 id="dayTitle">J1 - Pays des Ocres</h3>
+                    <div class="circuit-info" id="circuitInfo"></div>
+                    <div class="route-steps" id="routeSteps"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE = [43.87486528400317, 5.3181659969108335];
+        const dayColors = {
+            1: '#FF1744',
+            2: '#00BCD4',
+            3: '#FFC107'
+        };
+
+        const circuits = {
+            1: {
+                title: "Pays des Ocres & Gargas",
+                difficulties: {
+                    0: { name: "Court", km: 23, deniv: 380, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Base - Départ 9h00" },
+                        { name: "Roussillon", coord: [43.8850, 5.2600], poi: "Ocre - Pause (10km)" },
+                        { name: "Colorado", coord: [43.8700, 5.2050], poi: "Falaises (point de vue)" },
+                        { name: "Rustrel", coord: [43.8690, 5.2060], poi: "Village" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 13h" }
+                    ]},
+                    1: { name: "Normal", km: 34, deniv: 520, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 9h" },
+                        { name: "Roussillon", coord: [43.8850, 5.2600], poi: "Ocres (10km)" },
+                        { name: "Apt", coord: [43.8620, 5.3980], poi: "Marché" },
+                        { name: "Colorado", coord: [43.8700, 5.2050], poi: "Falaises" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 14h30" }
+                    ]},
+                    2: { name: "Long", km: 51, deniv: 680, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 8h30" },
+                        { name: "Roussillon", coord: [43.8850, 5.2600], poi: "Ocres" },
+                        { name: "Apt", coord: [43.8620, 5.3980], poi: "Marché" },
+                        { name: "Saignon", coord: [43.9020, 5.3750], poi: "Vue (22km)" },
+                        { name: "Buoux", coord: [43.8950, 5.1950], poi: "Forteresse" },
+                        { name: "Colorado", coord: [43.8700, 5.2050], poi: "Falaises" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 15h30" }
+                    ]}
+                }
+            },
+            2: {
+                title: "Gordes & Sénanque",
+                difficulties: {
+                    0: { name: "Court", km: 28, deniv: 450, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 9h" },
+                        { name: "Beaumettes", coord: [43.8550, 5.2950], poi: "Voie verte (8km)" },
+                        { name: "Gordes", coord: [43.9119, 5.2008], poi: "Village (18km)" },
+                        { name: "Château", coord: [43.9130, 5.2010], poi: "12ème siècle" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 13h30" }
+                    ]},
+                    1: { name: "Normal", km: 39, deniv: 580, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 9h" },
+                        { name: "Beaumettes", coord: [43.8550, 5.2950], poi: "Voie verte" },
+                        { name: "Gordes", coord: [43.9119, 5.2008], poi: "Artisans" },
+                        { name: "Sénanque", coord: [43.9100, 5.1900], poi: "Abbaye (23km)" },
+                        { name: "Murs", coord: [43.8800, 5.1200], poi: "Village (28km)" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 14h" }
+                    ]},
+                    2: { name: "Long", km: 48, deniv: 720, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 8h30" },
+                        { name: "Beaumettes", coord: [43.8550, 5.2950], poi: "Voie verte" },
+                        { name: "Gordes", coord: [43.9119, 5.2008], poi: "Déjeuner" },
+                        { name: "Sénanque", coord: [43.9100, 5.1900], poi: "Abbaye" },
+                        { name: "Joucas", coord: [43.9000, 5.1500], poi: "Falaise (28km)" },
+                        { name: "Murs", coord: [43.8800, 5.1200], poi: "Art" },
+                        { name: "Lioux", coord: [43.8500, 5.0800], poi: "Source (40km)" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 15h30" }
+                    ]}
+                }
+            },
+            3: {
+                title: "Villages du Sud",
+                difficulties: {
+                    0: { name: "Court", km: 19, deniv: 320, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 9h30" },
+                        { name: "Voie verte", coord: [43.8650, 5.2900], poi: "Facile (6km)" },
+                        { name: "Bonnieux", coord: [43.8239, 5.3075], poi: "Lunch (12km)" },
+                        { name: "Église", coord: [43.8250, 5.3050], poi: "Vue" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 13h30" }
+                    ]},
+                    1: { name: "Normal", km: 45, deniv: 650, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 9h" },
+                        { name: "Bonnieux", coord: [43.8239, 5.3075], poi: "Musée (15km)" },
+                        { name: "Lacoste", coord: [43.8200, 5.3100], poi: "Château (20km)" },
+                        { name: "Ménerbe", coord: [43.8100, 5.3200], poi: "Fortifié (25km)" },
+                        { name: "Confiturie", coord: [43.8090, 5.3180], poi: "Artisanal" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 14h30" }
+                    ]},
+                    2: { name: "Long", km: 60, deniv: 850, steps: [
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Départ 8h" },
+                        { name: "Bonnieux", coord: [43.8239, 5.3075], poi: "Snack (15km)" },
+                        { name: "Lacoste", coord: [43.8200, 5.3100], poi: "Château" },
+                        { name: "Ménerbe", coord: [43.8100, 5.3200], poi: "Confiture" },
+                        { name: "Oppède", coord: [43.7950, 5.3200], poi: "Fantôme (35km)" },
+                        { name: "Lourmarin", coord: [43.8250, 5.2750], poi: "Lunch (45km)" },
+                        { name: "Ansouis", coord: [43.8450, 5.3350], poi: "Renaissance (52km)" },
+                        { name: "Gargas", coord: [43.8748, 5.3181], poi: "Retour 15h45" }
+                    ]}
+                }
+            }
+        };
+
+        let map, currentDay = 1, currentDifficulty = 1, polylines = [], markers = [];
+
+        function initMap() {
+            map = L.map('map').setView(BASE, 11);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Esri',
+                maxZoom: 19
+            }).addTo(map);
+            const baseIcon = L.divIcon({
+                html: '<div style="background: #FF6B35; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">🏠</div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+            L.marker(BASE, { icon: baseIcon }).addTo(map).bindPopup('<b>Base Gargas</b><br>213 chemin de St Estève<br>Alt. 420m');
+        }
+
+        function selectDay(day) {
+            currentDay = day;
+            document.querySelectorAll('.day-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === day);
+            });
+            updateDisplay();
+        }
+
+        function updateDifficulty() {
+            currentDifficulty = parseInt(document.getElementById('difficultySlider').value);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const circuit = circuits[currentDay];
+            const difficulty = circuit.difficulties[currentDifficulty];
+            const color = dayColors[currentDay];
+
+            document.getElementById('dayTitle').textContent = circuit.title + ' - ' + difficulty.name;
+            document.getElementById('circuitInfo').innerHTML = '<div class="info-item"><div class="info-label">Distance</div><div class="info-value">' + difficulty.km + ' km</div></div><div class="info-item"><div class="info-label">Dénivelé</div><div class="info-value">' + difficulty.deniv + ' m</div></div><div class="info-item"><div class="info-label">Durée</div><div class="info-value">' + Math.round(difficulty.km / 15 + difficulty.deniv / 100) + ' h</div></div><div class="info-item"><div class="info-label">Niveau</div><div class="info-value">' + difficulty.name + '</div></div>';
+
+            let stepsHTML = '<h4>📍 Étapes</h4>';
+            difficulty.steps.forEach((step, idx) => {
+                stepsHTML += '<div class="step"><span class="step-num">Étape ' + (idx + 1) + ':</span> <strong>' + step.name + '</strong><div class="poi">' + step.poi + '</div></div>';
+            });
+            document.getElementById('routeSteps').innerHTML = stepsHTML;
+
+            polylines.forEach(p => map.removeLayer(p));
+            markers.forEach(m => map.removeLayer(m));
+            polylines = [];
+            markers = [];
+
+            const coords = difficulty.steps.map(s => s.coord);
+            L.polyline(coords, {
+                color: color,
+                weight: 5,
+                opacity: 0.9,
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(map);
+
+            difficulty.steps.forEach((step, idx) => {
+                const icon = L.divIcon({
+                    html: '<div style="background: white; width: 35px; height: 35px; border-radius: 50%; border: 3px solid ' + color + '; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: ' + color + '; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">' + (idx + 1) + '</div>',
+                    iconSize: [35, 35],
+                    iconAnchor: [17, 17]
+                });
+                const marker = L.marker(step.coord, { icon: icon })
+                    .bindPopup('<b style="color: ' + color + '">' + step.name + '</b><br>' + step.poi)
+                    .addTo(map);
+                markers.push(marker);
+            });
+
+            map.fitBounds(L.latLngBounds(coords), { padding: [50, 50] });
+        }
+
+        window.addEventListener('load', () => {
+            initMap();
+            updateDisplay();
+        });
+    </script>
 </body>
 </html>
