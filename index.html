@@ -21,7 +21,7 @@
 		.info { font-size: 0.95em; color: #9bb5c5; line-height: 1.6; }
 		
 		#map { 
-			width: 100vw; 
+			width: 100%;
 			height: 500px;
 			background: #0d1f2d;
 		}
@@ -37,6 +37,28 @@
 		
 		h2 { color: #f5a623; margin-bottom: 15px; }
 		
+		.slider-box {
+			background: rgba(50, 70, 90, 0.6);
+			padding: 20px;
+			border-radius: 6px;
+			margin-bottom: 30px;
+		}
+		
+		input[type="range"] {
+			width: 100%;
+			height: 8px;
+			cursor: pointer;
+			accent-color: #f5a623;
+		}
+		
+		.level-display {
+			text-align: center;
+			margin-top: 15px;
+			font-size: 1.2em;
+			color: #f5a623;
+			font-weight: bold;
+		}
+		
 		.route { 
 			background: rgba(50, 70, 90, 0.6); 
 			border-left: 4px solid #f5a623; 
@@ -45,19 +67,7 @@
 			border-radius: 4px; 
 		}
 		.route-name { color: #f5a623; font-weight: bold; margin-bottom: 5px; }
-		.route-info { color: #9bb5c5; font-size: 0.9em; }
-		
-		button { 
-			background: #f5a623; 
-			color: #1a2a3a; 
-			border: none; 
-			padding: 10px 20px; 
-			border-radius: 4px; 
-			cursor: pointer; 
-			font-weight: bold; 
-			margin: 10px 5px 10px 0;
-		}
-		button:hover { opacity: 0.8; }
+		.route-info { color: #9bb5c5; font-size: 0.9em; line-height: 1.6; }
 		
 		.footer { 
 			text-align: center; 
@@ -80,69 +90,81 @@
 	<div id="map"></div>
 
 	<div class="controls">
-		<h2>Réglage des circuits - 30 sept au 2 oct</h2>
+		<h2>Réglage des circuits</h2>
 		
-		<div style="margin-bottom: 30px; padding: 20px; background: rgba(50, 70, 90, 0.6); border-radius: 6px;">
-			<label style="display: block; color: #9bb5c5; margin-bottom: 15px;">📍 Gabarit des journées:</label>
-			<input type="range" id="difficultySlider" min="0" max="2" value="1" style="width: 100%; height: 8px; cursor: pointer; accent-color: #f5a623;">
-			<div style="display: flex; justify-content: space-between; margin-top: 10px; color: #7ab8d0; font-size: 0.9em;">
-				<span>🟡 Court (~20-30 km)</span>
-				<span id="levelLabel" style="color: #f5a623; font-weight: bold;">🟠 Normal (~35-45 km)</span>
-				<span>🔴 Long (~50-60 km)</span>
-			</div>
+		<div class="slider-box">
+			<label style="color: #9bb5c5; display: block; margin-bottom: 10px;">Choisissez votre gabarit:</label>
+			<input type="range" id="slider" min="0" max="2" value="1">
+			<div class="level-display" id="levelDisplay">🟠 NORMAL</div>
 		</div>
 		
-		<h3 style="color: #f5a623; margin-bottom: 15px; margin-top: 30px;">Vos circuits:</h3>
+		<h3 style="color: #f5a623; margin: 20px 0 15px 0;">Vos circuits du jour:</h3>
 		
 		<div class="route">
 			<div class="route-name">📍 J1 (30 sept) · Colorado & Gargas</div>
-			<div class="route-info">
-				<div style="margin: 8px 0;">🟡 Court: 23 km — Colorado seul</div>
-				<div style="margin: 8px 0;">🟠 Normal: 34 km — Colorado + Gargas</div>
-				<div style="margin: 8px 0;">🔴 Long: 51 km — Boucle complète</div>
+			<div class="route-info" id="j1Info">
+				<strong>🟠 NORMAL: 34 km</strong><br>
+				Roussillon → Colorado → Gargas/Ocres → retour
 			</div>
 		</div>
 		
 		<div class="route">
 			<div class="route-name">📍 J2 (1 oct) · Gordes & Sénanque</div>
-			<div class="route-info">
-				<div style="margin: 8px 0;">🟡 Court: 28 km — Gordes seul</div>
-				<div style="margin: 8px 0;">🟠 Normal: 39 km — Gordes + Sénanque</div>
-				<div style="margin: 8px 0;">🔴 Long: 48 km — + extensions (Joucas, Murs, Lioux)</div>
+			<div class="route-info" id="j2Info">
+				<strong>🟠 NORMAL: 39 km</strong><br>
+				Gordes → Sénanque → retour
 			</div>
 		</div>
 		
 		<div class="route">
-			<div class="route-name">📍 J3 (2 oct) · Sud Luberon - Villages perchés</div>
-			<div class="route-info">
-				<div style="margin: 8px 0;">🟡 Court: 19 km — Bonnieux</div>
-				<div style="margin: 8px 0;">🟠 Normal: 45 km — Bonnieux, Lacoste, Ménerbe</div>
-				<div style="margin: 8px 0;">🔴 Long: 60 km — + Oppède</div>
+			<div class="route-name">📍 J3 (2 oct) · Villages du Sud</div>
+			<div class="route-info" id="j3Info">
+				<strong>🟠 NORMAL: 45 km</strong><br>
+				Bonnieux → Lacoste → Ménerbe → retour
 			</div>
 		</div>
-		
-		<button onclick="alert('GPX en préparation')">📥 Télécharger GPX</button>
-		<button onclick="alert('URL: ' + window.location.href)">🔗 Partager</button>
 	</div>
 
 	<div class="footer">
 		<p>✨ v3.19.0 · Étoile du Luberon · Veloluberon</p>
-		<p style="margin-top: 10px; font-size: 0.8em;">Base: Gargas (43.8748, 5.3181) | POI: Colorado, Roussillon, Gordes, Sénanque, Bonnieux, Lacoste, Ménerbe, Oppède</p>
+		<p style="margin-top: 10px; font-size: 0.8em;">Base: Gargas (43.8748, 5.3181)</p>
 	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
 	
 	<script>
-		// Créer la carte
+		// DONNÉES DES CIRCUITS
+		var data = {
+			0: { // COURT
+				name: '🟡 COURT',
+				j1: { km: 23, desc: 'Colorado seul', coords: [[43.87486528400317, 5.3181659969108335], [43.87, 5.20], [43.87486528400317, 5.3181659969108335]] },
+				j2: { km: 28, desc: 'Gordes seul', coords: [[43.87486528400317, 5.3181659969108335], [43.911944, 5.200833], [43.87486528400317, 5.3181659969108335]] },
+				j3: { km: 19, desc: 'Bonnieux', coords: [[43.87486528400317, 5.3181659969108335], [43.8239, 5.3075], [43.87486528400317, 5.3181659969108335]] }
+			},
+			1: { // NORMAL
+				name: '🟠 NORMAL',
+				j1: { km: 34, desc: 'Colorado + Gargas', coords: [[43.87486528400317, 5.3181659969108335], [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], [43.87486528400317, 5.3181659969108335]] },
+				j2: { km: 39, desc: 'Gordes + Sénanque', coords: [[43.87486528400317, 5.3181659969108335], [43.911944, 5.200833], [43.91, 5.19], [43.87486528400317, 5.3181659969108335]] },
+				j3: { km: 45, desc: 'Bonnieux + Lacoste + Ménerbe', coords: [[43.87486528400317, 5.3181659969108335], [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], [43.87486528400317, 5.3181659969108335]] }
+			},
+			2: { // LONG
+				name: '🔴 LONG',
+				j1: { km: 51, desc: 'Boucle complète', coords: [[43.87486528400317, 5.3181659969108335], [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], [43.87486528400317, 5.3181659969108335]] },
+				j2: { km: 48, desc: 'Gordes + Sénanque + extensions', coords: [[43.87486528400317, 5.3181659969108335], [43.911944, 5.200833], [43.91, 5.19], [43.90, 5.15], [43.88, 5.12], [43.85, 5.08], [43.87486528400317, 5.3181659969108335]] },
+				j3: { km: 60, desc: 'Tous les villages + Oppède', coords: [[43.87486528400317, 5.3181659969108335], [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], [43.80, 5.32], [43.87486528400317, 5.3181659969108335]] }
+			}
+		};
+		
+		// CRÉER LA CARTE
 		var map = L.map('map').setView([43.87, 5.28], 11);
 		
-		// TUILES ESRI (fonctionne partout, gratuit)
+		// TUILES ESRI
 		L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
 			attribution: '© Esri',
 			maxZoom: 18
 		}).addTo(map);
 		
-		// Point de départ - Gargas
+		// MARQUEURS POI
 		var base = [43.87486528400317, 5.3181659969108335];
 		L.circleMarker(base, {
 			radius: 12,
@@ -151,14 +173,13 @@
 			weight: 3,
 			opacity: 1,
 			fillOpacity: 0.8
-		}).addTo(map).bindPopup('<b>Base Airbnb</b><br>Gargas<br>213 chemin de St Estève');
+		}).addTo(map).bindPopup('<b>Base Airbnb</b><br>Gargas');
 		
-		// Points d'intérêt
 		var pois = [
 			{coord: [43.87, 5.20], name: 'Colorado', color: '#d98b4a'},
 			{coord: [43.88, 5.26], name: 'Roussillon', color: '#c66b2c'},
 			{coord: [43.911944, 5.200833], name: 'Gordes', color: '#5a8a9a'},
-			{coord: [43.91, 5.19], name: 'Abbaye Sénanque', color: '#4a8a9a'},
+			{coord: [43.91, 5.19], name: 'Sénanque', color: '#4a8a9a'},
 			{coord: [43.8239, 5.3075], name: 'Bonnieux', color: '#d98b4a'},
 			{coord: [43.82, 5.31], name: 'Lacoste', color: '#d98b4a'},
 			{coord: [43.81, 5.32], name: 'Ménerbe', color: '#d98b4a'},
@@ -173,139 +194,63 @@
 				weight: 2,
 				opacity: 0.8,
 				fillOpacity: 0.6
-			}).addTo(map).bindPopup('<b>' + poi.name + '</b>');
+			}).addTo(map).bindPopup(poi.name);
 		});
 		
-		// ==================== TRACÉS DES CIRCUITS ====================
-		
-		// J1 - Colorado & Gargas
-		var j1_route = [
-			base,
-			[43.88, 5.26],  // Roussillon
-			[43.87, 5.20],  // Colorado
-			[43.88, 5.29],  // Gargas/Ocres
-			base
-		];
-		L.polyline(j1_route, {
-			color: '#f5a623',
-			weight: 3,
-			opacity: 0.7,
-			dashArray: '5, 5'
-		}).addTo(map).bindPopup('J1 · Colorado & Gargas');
-		
-		// J2 Court - Gordes seul
-		var j2_court = [
-			base,
-			[43.911944, 5.200833],  // Gordes
-			base
-		];
-		
-		// J2 Normal - Gordes & Sénanque
-		var j2_normal = [
-			base,
-			[43.911944, 5.200833],  // Gordes
-			[43.91, 5.19],  // Sénanque
-			base
-		];
-		
-		// J2 Long - Gordes, Sénanque & extensions
-		var j2_long = [
-			base,
-			[43.911944, 5.200833],  // Gordes
-			[43.91, 5.19],  // Sénanque
-			[43.90, 5.15],  // Joucas
-			[43.88, 5.12],  // Murs
-			[43.85, 5.08],  // Lioux
-			base
-		];
-		
-		// Afficher J2 Normal par défaut
-		L.polyline(j2_normal, {
-			color: '#4a8a9a',
-			weight: 3,
-			opacity: 0.7,
-			dashArray: '5, 5'
-		}).addTo(map).bindPopup('J2 · Gordes & Sénanque');
-		
-		// J3 Court - Bonnieux
-		var j3_court = [
-			base,
-			[43.8239, 5.3075],  // Bonnieux
-			base
-		];
-		
-		// J3 Normal - Bonnieux, Lacoste, Ménerbe
-		var j3_normal = [
-			base,
-			[43.8239, 5.3075],  // Bonnieux
-			[43.82, 5.31],  // Lacoste
-			[43.81, 5.32],  // Ménerbe
-			base
-		];
-		
-		// J3 Long - Bonnieux, Lacoste, Ménerbe, Oppède
-		var j3_long = [
-			base,
-			[43.8239, 5.3075],  // Bonnieux
-			[43.82, 5.31],  // Lacoste
-			[43.81, 5.32],  // Ménerbe
-			[43.80, 5.32],  // Oppède
-			base
-		];
-		
-		// Groupes de tracés par difficulté
-		var routesByLevel = {
-			0: {
-				j1: [base, [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], base],
-				j2: [base, [43.911944, 5.200833], base],
-				j3: [base, [43.8239, 5.3075], base]
-			},
-			1: {
-				j1: [base, [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], base],
-				j2: [base, [43.911944, 5.200833], [43.91, 5.19], base],
-				j3: [base, [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], base]
-			},
-			2: {
-				j1: [base, [43.88, 5.26], [43.87, 5.20], [43.88, 5.29], base],
-				j2: [base, [43.911944, 5.200833], [43.91, 5.19], [43.90, 5.15], [43.88, 5.12], [43.85, 5.08], base],
-				j3: [base, [43.8239, 5.3075], [43.82, 5.31], [43.81, 5.32], [43.80, 5.32], base]
-			}
-		};
-		
-		// Couches pour chaque circuit (seront créées au besoin)
-		var layers = {
+		// TRACÉS (objets polylines)
+		var polylines = {
 			j1: null,
 			j2: null,
 			j3: null
 		};
 		
-		// Afficher J2 et J3 Normal par défaut
-		L.polyline(j2_normal, {
-			color: '#4a8a9a',
-			weight: 3,
-			opacity: 0.7,
-			dashArray: '5, 5'
-		}).addTo(map).bindPopup('J2 · Gordes & Sénanque');
+		// FONCTION POUR METTRE À JOUR LES TRACÉS
+		function updateRoutes(level) {
+			var levelData = data[level];
+			
+			// Supprimer les anciens tracés
+			if (polylines.j1) map.removeLayer(polylines.j1);
+			if (polylines.j2) map.removeLayer(polylines.j2);
+			if (polylines.j3) map.removeLayer(polylines.j3);
+			
+			// Ajouter les nouveaux tracés
+			polylines.j1 = L.polyline(levelData.j1.coords, {
+				color: '#f5a623',
+				weight: 3,
+				opacity: 0.7,
+				dashArray: '5, 5'
+			}).addTo(map).bindPopup('J1 - ' + levelData.j1.desc);
+			
+			polylines.j2 = L.polyline(levelData.j2.coords, {
+				color: '#4a8a9a',
+				weight: 3,
+				opacity: 0.7,
+				dashArray: '5, 5'
+			}).addTo(map).bindPopup('J2 - ' + levelData.j2.desc);
+			
+			polylines.j3 = L.polyline(levelData.j3.coords, {
+				color: '#d98b4a',
+				weight: 3,
+				opacity: 0.7,
+				dashArray: '5, 5'
+			}).addTo(map).bindPopup('J3 - ' + levelData.j3.desc);
+			
+			// Mettre à jour le texte
+			document.getElementById('levelDisplay').textContent = levelData.name;
+			document.getElementById('j1Info').innerHTML = '<strong>' + levelData.name + ': ' + levelData.j1.km + ' km</strong><br>' + levelData.j1.desc;
+			document.getElementById('j2Info').innerHTML = '<strong>' + levelData.name + ': ' + levelData.j2.km + ' km</strong><br>' + levelData.j2.desc;
+			document.getElementById('j3Info').innerHTML = '<strong>' + levelData.name + ': ' + levelData.j3.km + ' km</strong><br>' + levelData.j3.desc;
+		}
 		
-		L.polyline(j3_normal, {
-			color: '#d98b4a',
-			weight: 3,
-			opacity: 0.7,
-			dashArray: '5, 5'
-		}).addTo(map).bindPopup('J3 · Villages du Sud');
-		
-		// ==================== CONTRÔLE DU SLIDER ====================
-		
-		var levels = ['🟡 Court', '🟠 Normal', '🔴 Long'];
-		var currentLevel = 1;
-		
-		document.getElementById('difficultySlider').addEventListener('change', function() {
-			currentLevel = parseInt(this.value);
-			document.getElementById('levelLabel').textContent = levels[currentLevel];
-			console.log('Niveau changé à: ' + levels[currentLevel]);
+		// ÉVÉNEMENT SLIDER
+		document.getElementById('slider').addEventListener('input', function() {
+			updateRoutes(parseInt(this.value));
 		});
 		
-		console.log('✅ Carte prête avec tous les tracés!');
+		// INITIALISER AVEC NORMAL
+		updateRoutes(1);
+		
+		console.log('✅ Carte chargée - slider fonctionnel!');
 	</script>
 </body>
 </html>
